@@ -21,16 +21,12 @@
         </div>
         <h3>Background</h3>
         <p>Use the button below to start (and pause) Andrew’s explanations of the chart. You can also explore the chart yourself by selecting any visible items and moving along step by step. The original version of the flowchart is included as a printed foldout in Andrew’s new book <a class="bc" href="https://bettercatastrophe.com/" target="_blank">“I Want a Better Catastrophe”</a>. This interactive online version uses an experimental interface that was created in an attempt to rethink the flowchart as a well-known genre of information design, integrating narration and interactivity.</p>
-        <h3>Feedback</h3>
-        <p>If you have thoughts, ideas, and suggestions for this interface, please fill out this <a class="fo" :href="feedbackStore.formUrl" target="_blank">short feedback form</a>.</p>
         <h3>Credits</h3>
         <p>
           <strong><a class="ab" href="https://andrewboyd.com/" target="_blank">Andrew Boyd</a></strong>Book and original flowchart<br />
           <strong><a class="jp" href="https://jona.im/" target="_blank">Jona Pomerance</a></strong>Ideation, design and development<br />
           <strong><a class="md" href="https://mariandoerk.de/" target="_blank">Marian Dörk</a></strong>Research supervision
         </p>
-        <h3>Logging</h3>
-        <p>This website logs basic, anonymous information such as user-selected items within the chart. No personally identifiable data such as IP address, cookies, or browser specs is tracked.</p>
         <div class="logos">
           <a class="fh" href="https://www.fh-potsdam.de/en/" target="_blank"><img src="@/assets/fhp.svg" /></a>
           <a class="uc" href="https://uclab.fh-potsdam.de/" target="_blank"><img src="@/assets/uclab.svg" /></a>
@@ -53,7 +49,6 @@ import PrimaryButton from '@/components/PrimaryButton.vue';
 
 import { useFlowchartStore } from '@/stores/FlowchartStore.js';
 import { useViewStore } from '@/stores/ViewStore.js';
-import { useFeedbackStore } from '@/stores/FeedbackStore.js';
 
 export default {
   name: 'TheIntroPanel',
@@ -75,8 +70,7 @@ export default {
   
   computed: {
     ...mapStores(
-      useViewStore,
-      useFeedbackStore
+      useViewStore
     ),
     ...mapState(useFlowchartStore, [
       'currentNodeId'
@@ -89,9 +83,6 @@ export default {
   methods: {
     ...mapActions(useFlowchartStore, [
       'clearLocalStorageAndReload'
-    ]),
-    ...mapActions(useFeedbackStore, [
-      'logEvent'
     ])
   },
 
@@ -115,8 +106,6 @@ export default {
           element.setAttribute('tabindex', -1);
         });
       }
-
-      this.logEvent('update_introPanelVisible');
     }
   }
 }
