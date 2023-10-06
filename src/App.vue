@@ -8,9 +8,10 @@
     @playing="flowchartStore.mediaBuffering = false"
     @ended="stopPlayback(true)"
   >
-    <source src="@/data/narration.m4a" type="audio/mp4" />
+    <source src="narration.m4a" type="audio/mp4" />
   </audio>
   <TheFlowchart
+    v-if="flowchartStore.currentNarrationNodeId"
     @setCurrentNodeId="setCurrentNodeId"
     @jumpNarrationToNode="jumpNarrationToNode"
     @startPlayback="startPlayback"
@@ -72,6 +73,7 @@ export default {
 
   methods: {
     ...mapActions(useFlowchartStore, [
+      'fetchTimestamps',
       'saveToLocalStorage',
       'resumeFromLocalStorage'
     ]),
@@ -236,6 +238,9 @@ export default {
     if ('wakeLock' in navigator) {
       this.wakeLockSupported = true;
     }
+
+    // fetch timestamps from public JSON
+    this.fetchTimestamps();
 
     // attempt to get state from previous session
     this.resumeFromLocalStorage();

@@ -1,7 +1,5 @@
 import { defineStore } from 'pinia';
 
-import narrationTimestamps from '@/data/timestamps.json';
-
 export const useFlowchartStore = defineStore('flowchart', {
   state: () => ({
     // nodes and their state
@@ -11,7 +9,7 @@ export const useFlowchartStore = defineStore('flowchart', {
     revealedItems: [],
 
     // narration/timestamps and their state
-    narrationTimestamps,
+    narrationTimestamps: [],
     listenedTimestampIndexes: [],
     narrationChapters: [],
     listenedChapterIndexes: [],
@@ -64,7 +62,11 @@ export const useFlowchartStore = defineStore('flowchart', {
     },
     // current narration node ID
     currentNarrationNodeId(state) {
-      return state.narrationTimestamps[this.currentNarrationNodeIndex][0];
+      if (state.narrationTimestamps.length > 0) {
+        return state.narrationTimestamps[this.currentNarrationNodeIndex][0];
+      } else {
+        return false;
+      }
     },
     // current narration node object
     currentNarrationNode(state) {
@@ -98,6 +100,13 @@ export const useFlowchartStore = defineStore('flowchart', {
     },
   },
   actions: {
+    // fetch timestamps from public JSON
+    async fetchTimestamps() {
+      fetch('timestamps.json')
+        .then(response => response.json())
+        .then(data => this.narrationTimestamps = data)
+        .catch(error => console.log(error));
+    },
     // save all parameters relevant for restoring the state of the chart to local storage
     saveToLocalStorage() {
       this.storedProperties.forEach((property) => {
