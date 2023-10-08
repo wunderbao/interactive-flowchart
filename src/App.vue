@@ -21,6 +21,8 @@
     @mousedown="hideChapterListAndIntroPanel()"
   />
   <TheIntroPanel
+    :siteTitle="userSetup.title"
+    :siteSubtitle="userSetup.subtitle"
     @togglePlayback="togglePlayback()"
     @toggleIntroPanel="toggleIntroPanel()"
   />
@@ -54,6 +56,8 @@ export default {
 
   data() {
     return {
+      userSetup: {},
+
       // return to playback timeout reference and auto-return delay
       returnToPlaybackTimeout: undefined,
       returnToPlaybackDelay: 8000,
@@ -77,6 +81,29 @@ export default {
       'saveToLocalStorage',
       'resumeFromLocalStorage'
     ]),
+
+    // ...
+    async fetchUserSetup() {
+      fetch('setup.json')
+        .then(response => response.json())
+        .then(data => {
+          this.userSetup = data;
+          this.applyUserSetup();
+        })
+        .catch(error => console.log(error));
+    },
+
+    applyUserSetup() {
+      document.title = this.userSetup.title;
+
+      for (const [property, color] of Object.entries(this.userSetup.colors)) {
+        document.documentElement.style.setProperty('--' + property, this.hexToRgb(color));
+      }
+
+      if (this.userSetup['dark-mode']) {
+        document.documentElement.style.setProperty('--invert-filter', 'invert(1)');
+      }
+    },
 
     // update the current node ID
     setCurrentNodeId(nodeId) {
@@ -230,10 +257,22 @@ export default {
           this.wakeLock = null;
         })
       }
+    },
+
+    hexToRgb(hex) {
+      const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+      hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+      });
+
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? parseInt(result[1], 16) + ',' + parseInt(result[2], 16) + ',' + parseInt(result[3], 16) : null;
     }
   },
 
   created() {
+    this.fetchUserSetup();
+
     // set wakeLockSupported if supported
     if ('wakeLock' in navigator) {
       this.wakeLockSupported = true;
@@ -277,7 +316,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: var(--background-color);
+  background: rgb(var(--background-color));
 }
 
 #app {
@@ -285,7 +324,7 @@ body {
   font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
   font-size: 15px;
   text-rendering: optimizeLegibility;
-  color: #fff;
+  color: rgb(var(--text-color));
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
@@ -294,6 +333,6 @@ body {
 }
 
 *:focus-visible {
-  box-shadow: 0 0 0 2px var(--background-color), 0 0 0 4px var(--focus-color) !important;
+  box-shadow: 0 0 0 2px rgb(var(--background-color)), 0 0 0 4px var(--focus-color) !important;
 }
 </style>

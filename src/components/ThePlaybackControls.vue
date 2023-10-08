@@ -130,16 +130,18 @@ export default {
     width: 384px;
     height: 64px;
     border-radius: 32px;
-    background: rgba(90,90,90,0.75);
+    background:
+      linear-gradient(to top, rgba(var(--text-color), 0.1), rgba(var(--text-color), 0.1)),
+      linear-gradient(to top, rgba(var(--background-color),0.65), rgba(var(--background-color),0.65));
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
-    box-shadow: 0 0 0 0 var(--background-color);
+    box-shadow: 0 0 0 0 rgb(var(--background-color));
     transition-property: width, height, box-shadow;
     transition-duration: var(--transition-duration), var(--transition-duration), var(--transition-duration-long);
     transition-timing-function: var(--transition-timing);
 
     &.shadow {
-      box-shadow: 0 0 0 2px var(--background-color);
+      box-shadow: 0 0 0 2px rgb(var(--background-color));
     }
 
     &.playing {
@@ -164,7 +166,7 @@ export default {
       height: 336px;
 
       .drawer {
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+        box-shadow: inset 0 1px 0 rgba(var(--text-color),0.15);
 
         &:after {
           transform: rotate(0deg);
@@ -186,7 +188,7 @@ export default {
       cursor: pointer;
       
       &:hover {
-        background-color: rgba(255,255,255,0.05);
+        background-color: rgba(var(--text-color),0.05);
       }
       
       &:after {
@@ -200,6 +202,7 @@ export default {
         background-image: url('@/assets/icons/chevron.svg');
         transform: rotate(-180deg);
         transition: transform var(--transition-duration) var(--transition-timing);
+        filter: var(--invert-filter);
       }
 
       span {
@@ -217,7 +220,7 @@ export default {
           em {
             display: block;
             font-style: normal;
-            color: rgba(255,255,255,0.35);
+            color: rgba(var(--text-color),0.35);
           }
         }
       }
@@ -234,41 +237,56 @@ export default {
       list-style: none;
 
       li {
+        position: relative;
         padding: 6.5px 0 7.5px 80px;
         font-weight: 600;
-        background-size: 8px;
-        background-position: center left 28px;
-        background-repeat: no-repeat;
         cursor: default;
+
+        &:after {
+          position: absolute;
+          display: block;
+          content: '';
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background-size: 8px;
+          background-position: center left 28px;
+          background-repeat: no-repeat;
+        }
 
         &.revealed {
           cursor: pointer;
         }
 
         &.revealed:hover:not(.active) {
-          background-color: rgba(255,255,255,0.125);
+          background-color: rgba(var(--text-color),0.1);
         }
 
         &:not(.revealed) span {
           color: transparent;
-          background: rgba(0,0,0,0.4);
+          background: rgba(var(--text-color),0.15);
         }
 
-        &.revealed:not(.listened):not(.active) {
+        &.revealed:not(.listened):not(.active):after {
           background-image: url('@/assets/icons/new.svg');
+          filter: var(--invert-filter);
         }
 
-        &.listened {
+        &.listened,
+        &.active {
           font-weight: normal;
         }
 
         &.active {
-          font-weight: normal;
-          color: #fff;
-          background-size: 18px;
-          background-position: center left 23px;
-          background-image: url('@/assets/icons/playing.svg');
-          background-color: rgba(255,255,255,0.25);
+          background-color: rgba(var(--text-color),0.15);
+
+          &:after {
+            background-size: 18px;
+            background-position: center left 23px;
+            background-image: url('@/assets/icons/playing.svg');
+            filter: var(--invert-filter);
+          }
         }
 
         &.primary {
@@ -283,7 +301,7 @@ export default {
             left: 0;
             right: 0;
             height: 1px;
-            background: rgba(255,255,255,0.15);
+            background: rgba(var(--text-color),0.15);
           }
         }
 
@@ -306,7 +324,7 @@ export default {
     visibility: hidden;
     opacity: 0;
     margin-left: 12px;
-    box-shadow: 0 0 0 0px var(--background-color);
+    box-shadow: 0 0 0 0px rgb(var(--background-color));
 
     &.visible {
       visibility: visible;
@@ -314,7 +332,7 @@ export default {
     }
 
     &.shadow {
-      box-shadow: 0 0 0 2px var(--background-color);
+      box-shadow: 0 0 0 2px rgb(var(--background-color));
     }
   }
 }

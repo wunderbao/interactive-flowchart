@@ -9,8 +9,8 @@
   <div ref="intro" class="intro" :class="{ visible: viewStore.introPanelVisible }">
     <div class="outer">
       <div class="inner">
-        <h1>I Want A Better Catastrophe</h1>
-        <h2>A flowchart for navigating our climate predicament</h2>
+        <h1 v-if="siteTitle" v-text="siteTitle" />
+        <h2 v-if="siteSubtitle" v-text="siteSubtitle" />
         <div v-if="resetActionAvailable" class="reset">
           <span>Want to re-explore from the beginning?</span>
           <button @click="clearLocalStorageAndReload()">Reset progress and start over</button>
@@ -36,6 +36,11 @@ export default {
 
   components: {
     PrimaryButton
+  },
+
+  props: {
+    siteTitle: String,
+    siteSubtitle: String
   },
 
   emits: [
@@ -117,7 +122,7 @@ button.open {
   position: absolute;
   top: 16px;
   left: 16px;
-  box-shadow: 0 0 0 2px var(--background-color);
+  box-shadow: 0 0 0 2px rgb(var(--background-color));
 }
 
 .intro {
@@ -128,8 +133,8 @@ button.open {
   bottom: 0;
   left: 0;
   width: 0;
-  color: rgba(255,255,255,0.9);
-  background: var(--intro-background-color);
+  color: rgb(var(--text-color));
+  background: rgb(var(--intro-background-color));
   transition: width var(--transition-duration-long) var(--transition-timing);
 
   &.visible {
@@ -142,34 +147,6 @@ button.open {
     .inner > *, .inner .instructions *:not(.reset) {
       opacity: 1;
     }
-  }
-
-  &:before, &:after {
-    position: absolute;
-    display: block;
-    content: '';
-    left: 0;
-    width: var(--panel-width);
-    pointer-events: none;
-  }
-
-  &:before {
-    z-index: 1;
-    bottom: 0;
-    height: var(--panel-width);
-    background: linear-gradient(180deg, rgba(62,62,62,0) 0%, #3E3E3E 100%), linear-gradient(180deg, rgba(62,62,62,0) 0%, #3E3E3E 100%);
-  }
-
-  &:after {
-    z-index: 2;
-    opacity: 0;
-    bottom: 80px;
-    height: 340px;
-    background-size: var(--panel-width);
-    background-position: center bottom;
-    background-repeat: no-repeat;
-    background-image: url('@/assets/tentacles.png');
-    transition: opacity var(--transition-duration-long) var(--transition-timing);
   }
 
   *::selection {
@@ -189,7 +166,7 @@ button.open {
   .inner {
     position: relative;
     width: var(--panel-width);
-    padding: 24px 28px var(--panel-width);
+    padding: 24px 28px 128px;
     box-sizing: border-box;
 
     > *, .instructions *:not(.reset) {
@@ -199,37 +176,36 @@ button.open {
   }
 
   h1 {
-    max-width: 284px;
+    max-width: 332px;
     margin: 0;
     font-size: 30px;
     font-weight: 600;
-    line-height: 100%;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
+    line-height: 110%;
   }
 
   h2 {
-    max-width: 256px;
-    margin: 6px 0 20px;
+    margin: 10px 0 20px;
     font-size: 20px;
     font-weight: 400;
-    line-height: 105%;
+    line-height: 120%;
+  }
+
+  .description {
+    margin-top: 40px;
   }
 
   h3 {
-    margin: 24px 0 0;
+    margin: 24px 0 -1px;
     font-size: 15px;
     font-weight: 600;
-    line-height: 105%;
+    line-height: 120%;
     letter-spacing: 0.01em;
     text-transform: uppercase;
   }
 
   p {
-    margin: 12px 0;
-    font-family: 'Vesper Libre', serif;
-    font-size: 16px;
-    line-height: 130%;
+    margin: 10px 0;
+    line-height: 140%;
 
     strong {
       display: block;
@@ -249,85 +225,36 @@ button.open {
     }
   }
 
-  .instructions {
-    position: relative;
-    display: grid;
-    align-items: start;
-    opacity: 1 !important;
-    margin: 20px 0 72px;
-
-    > * {
-      grid-column-start: 1;
-      grid-row-start: 1;
-    }
-
-    img {
-      display: block;
-      width: 100%;
-      max-width: 290px;
-      margin: 0 auto;
-    }
-
-    .reset {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      box-sizing: border-box;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      min-height: 118px;
-      margin: 2px -12px 0 -12px;
-      padding: 16px 24px 20px;
-      text-align: center;
-      text-wrap: balance;
-      line-height: 1.25;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.08);
-      -webkit-backdrop-filter: blur(24px);
-      backdrop-filter: blur(24px);
-
-      button {
-        display: block;
-        margin: 12px auto 2px;
-        padding: 8px 16px;
-        appearance: none;
-        font-weight: 600;
-        border: none;
-        border-radius: 64px;
-        color: #fff;
-        background: rgb(var(--accent-color));
-        cursor: pointer;
-        transition: opacity var(--transition-duration-long) var(--transition-timing), transform var(--transition-duration) var(--transition-timing) !important;
-
-        &:hover {
-          transform: scale(1.0625);
-        }
-      }
-    }
-  }
-
-  .logos {
+  .reset {
     display: flex;
-    align-items: top;
-    gap: 32px;
-    margin: 58px 0 -8px;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+    margin: 36px -12px 0 -12px;
+    padding: 24px 24px 28px;
+    text-align: center;
+    text-wrap: balance;
+    line-height: 1.25;
+    border-radius: 8px;
+    background:
+      linear-gradient(to top, rgba(var(--text-color), 0.1), rgba(var(--text-color), 0.1)),
+      linear-gradient(to top, rgba(var(--background-color),0.65), rgba(var(--background-color),0.65));
 
-    a {
-      flex: 1;
-      transition: opacity var(--transition-duration) var(--transition-timing);
-
-      &:first-child {
-        flex-basis: 25%;
-      }
+    button {
+      display: block;
+      margin: 12px auto 2px;
+      padding: 8px 16px;
+      appearance: none;
+      font-weight: 600;
+      border: none;
+      border-radius: 64px;
+      color: #fff;
+      background: rgb(var(--accent-color));
+      cursor: pointer;
+      transition: opacity var(--transition-duration-long) var(--transition-timing), transform var(--transition-duration) var(--transition-timing) !important;
 
       &:hover {
-        opacity: 0.65;
-      }
-
-      img {
-        width: 100%;
+        transform: scale(1.0625);
       }
     }
   }
@@ -345,7 +272,7 @@ button.open {
     border-radius: 100%;
     background-position: center;
     background-image: url('@/assets/icons/close.svg');
-    background-color: rgba(111,111,111,0.75);
+    background-color: rgba(var(--text-color),0.5);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
     cursor: pointer;
@@ -364,31 +291,15 @@ button.open {
 
   *:focus-visible {
     position: relative;
-    background: var(--intro-background-color);
-    box-shadow: 0 0 0 2px var(--intro-background-color), 0 0 0 4px var(--focus-color) !important;
+    background: rgb(var(--intro-background-color));
+    box-shadow: 0 0 0 2px rgb(var(--intro-background-color)), 0 0 0 4px var(--focus-color) !important;
   }
 }
 
 @media (max-width: 600px) {
   .intro.visible,
-  .intro:before,
-  .intro:after,
   .intro .inner {
     width: 100vw;
-  }
-}
-
-@media (max-height: 650px) {
-  .intro:before {
-    height: 33vh;
-  }
-  
-  .intro:after {
-    display: none;
-  }
-
-  .intro .inner {
-    padding-bottom: 33vh;
   }
 }
 </style>

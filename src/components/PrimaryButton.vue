@@ -34,7 +34,9 @@ button {
   background-size: 32px;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: #777;
+  background-color: rgba(var(--text-color),0.5);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   cursor: pointer;
   transition-property: opacity, visibility, border, background-color, transform, box-shadow;
   transition-duration: var(--transition-duration);
