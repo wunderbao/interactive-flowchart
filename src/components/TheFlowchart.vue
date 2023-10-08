@@ -1,7 +1,7 @@
 <template>
   <div ref="container" class="flowchart">
     <InlineSvg
-      :src="flowchartAsset"
+      src="flowchart.svg"
       :class="{ ready: flowchartElement }"
       @loaded="flowchartReady($event)"
     />
@@ -16,8 +16,6 @@ import InlineSvg from 'vue-inline-svg';
 
 import { useFlowchartStore } from '@/stores/FlowchartStore.js';
 import { useViewStore } from '@/stores/ViewStore.js';
-
-import flowchartAsset from '@/assets/flowchart.svg';
 
 export default {
   name: 'TheFlowchart',
@@ -37,8 +35,7 @@ export default {
 
   data() {
     return {
-      // imported flowchart asset and container/svg elements
-      flowchartAsset,
+      // flowchart container/svg elements
       flowchartContainer: undefined,
       flowchartElement: undefined,
 
