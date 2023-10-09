@@ -6,7 +6,7 @@
     @stalled="flowchartStore.mediaBuffering = true"
     @loadeddata="flowchartStore.mediaBuffering = false"
     @playing="flowchartStore.mediaBuffering = false"
-    @ended="stopPlayback(true)"
+    @ended="stopPlayback()"
   >
     <source src="narration.m4a" type="audio/mp4" />
   </audio>
@@ -17,8 +17,7 @@
     @startPlayback="startPlayback"
     @startExplorationDuringPlayback="startExplorationDuringPlayback()"
     @stopExplorationDuringPlayback="stopExplorationDuringPlayback()"
-    @hideChapterListAndIntroPanel="hideChapterListAndIntroPanel()"
-    @mousedown="hideChapterListAndIntroPanel()"
+    @mousedown="toggleIntroPanel(true)"
   />
   <TheIntroPanel
     :siteTitle="userSetup.title"
@@ -28,10 +27,8 @@
   />
   <ThePlaybackControls
     @jumpNarrationToNode="jumpNarrationToNode"
-    @jumpNarrationToChapter="jumpNarrationToChapter"
     @togglePlayback="togglePlayback()"
     @stopExplorationDuringPlayback="stopExplorationDuringPlayback()"
-    @toggleChapterList="toggleChapterList()"
   />
 </template>
 
@@ -108,7 +105,6 @@ export default {
     // update the current node ID
     setCurrentNodeId(nodeId) {
       this.flowchartStore.currentNodeId = nodeId;
-      this.toggleChapterList(true);
       this.saveToLocalStorage();
     },
 
@@ -153,17 +149,6 @@ export default {
       }
     },
 
-    // jump playback position to chapter
-    jumpNarrationToChapter(index) {
-      this.setPlaybackPosition(this.flowchartStore.narrationChapters[index].timestamp);
-
-      // if node of selected chapter is the same as the current narration node, this will not trigger
-      // currentNarrationNodeId watcher -> therefore start playback manually
-      if (this.flowchartStore.narrationChapters[index].id === this.flowchartStore.currentNarrationNodeId) {
-        this.startPlayback();
-      }
-    },
-
     // update current playback position and set currentTime of media to that position
     // (timeupdate event of media will keep updating playback position once ready/buffered)
     setPlaybackPosition(playbackPosition) {
@@ -180,19 +165,15 @@ export default {
       this.$refs.media.play();
       this.flowchartStore.playbackActive = true;
       this.requestWakeLock();
-      this.hideChapterListAndIntroPanel();
+      this.toggleIntroPanel(true);
     },
 
     // stop playback
-    stopPlayback(openChapterList = false) {
+    stopPlayback() {
       this.$refs.media.pause();
       this.flowchartStore.playbackActive = false;
       this.releaseWakeLock();
       this.stopExplorationDuringPlayback();
-      
-      if (openChapterList) {
-        this.toggleChapterList();
-      }
     },
 
     // toggle playback
@@ -221,24 +202,7 @@ export default {
       } else {
         this.viewStore.introPanelVisible = true;
         this.stopPlayback();
-        this.toggleChapterList(true);
       }
-    },
-
-    // toggle visibility of chapter list
-    toggleChapterList(forceClose = false) {
-      if (forceClose || this.viewStore.chapterListVisible) {
-        this.viewStore.chapterListVisible = false;
-      } else {
-        this.viewStore.chapterListVisible = true;
-        this.toggleIntroPanel(true);
-      }
-    },
-
-    // hide both chapter list and intro panel
-    hideChapterListAndIntroPanel() {
-      this.toggleChapterList(true);
-      this.toggleIntroPanel(true);
     },
 
     // request and release wakeLock if supported

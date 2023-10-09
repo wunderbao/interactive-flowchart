@@ -4,35 +4,13 @@
       class="playback"
       @click="$emit(flowchartStore.exploringDuringPlayback ? 'stopExplorationDuringPlayback' : 'togglePlayback')"
     />
-    <div ref="chapters" class="chapters" :class="{ shadow: !viewStore.introPanelVisible, playing: flowchartStore.playbackActive, open: viewStore.chapterListVisible }">
-      <div
-        class="drawer"
-        :title="flowchartStore.playbackActive ? 'Pause narration playback' : (viewStore.chapterListVisible ? 'Close narration log' : 'Open narration log')"
-        @click="$emit(flowchartStore.playbackActive ? 'togglePlayback' : 'toggleChapterList')"
-      >
-        <span v-if="flowchartStore.currentNarrationChapter" class="chapter">
-          {{ flowchartStore.currentNarrationChapter.label }}
-        </span>
-        <span class="time">
+    <div ref="chapters" class="chapters" :class="{ shadow: !viewStore.introPanelVisible, playing: flowchartStore.playbackActive }">
+      <div class="drawer">
+        <span>
           {{ flowchartStore.prettyPlaybackPosition }}
           <em>{{ flowchartStore.prettyPlaybackDuration }}</em>
         </span>
       </div>
-      <ul ref="chapterList">
-        <li
-          v-for="(chapter, index) in flowchartStore.narrationChapters"
-          :key="index"
-          :class="[
-            chapter.type,
-            flowchartStore.revealedItems.indexOf(chapter.element.id) !== -1 ? 'revealed' : '',
-            flowchartStore.listenedChapterIndexes.indexOf(index) !== -1 ? 'listened' : '',
-            flowchartStore.currentNarrationChapterIndex === index ? 'active' : ''
-          ]"
-          @click="flowchartStore.revealedItems.indexOf(chapter.element.id) !== -1 && $emit('jumpNarrationToChapter', index)"
-        >
-          <span>{{ chapter.label }}</span>
-        </li>
-      </ul>
     </div>
     <PrimaryButton
       class="jump"
@@ -65,10 +43,8 @@ export default {
 
   emits: [
     'jumpNarrationToNode',
-    'jumpNarrationToChapter',
     'togglePlayback',
-    'stopExplorationDuringPlayback',
-    'toggleChapterList'
+    'stopExplorationDuringPlayback'
   ],
 
   computed: {
@@ -83,14 +59,6 @@ export default {
     'flowchartStore.playbackActive'() {
       if (this.flowchartStore.playbackActive === false && this.$refs.chapters.style['-webkit-backdrop-filter'] !== undefined) {
         this.$refs.chapters.style['-webkit-backdrop-filter'] = `blur(${ 16 + Math.random() / 100 }px)`;
-      }
-    },
-    'viewStore.chapterListVisible'() {
-      if (this.viewStore.chapterListVisible) {
-        this.$refs.chapterList.querySelector('li.active').scrollIntoView({
-          behavior: 'instant',
-          block: 'center'
-        });
       }
     }
   }
@@ -127,7 +95,7 @@ export default {
     position: relative;
     display: inline-block;
     overflow: hidden;
-    width: 384px;
+    width: 150px;
     height: 64px;
     border-radius: 32px;
     background:
@@ -144,36 +112,6 @@ export default {
       box-shadow: 0 0 0 2px rgb(var(--background-color));
     }
 
-    &.playing {
-      width: 150px;
-
-      .drawer {
-        span {
-          &.chapter {
-            visibility: hidden;
-            opacity: 0;
-          }
-
-          &.time {
-            visibility: visible;
-            opacity: 1;
-          }
-        }
-      }
-    }
-
-    &:not(.playing).open {
-      height: 336px;
-
-      .drawer {
-        box-shadow: inset 0 1px 0 rgba(var(--text-color),0.15);
-
-        &:after {
-          transform: rotate(0deg);
-        }
-      }
-    }
-
     .drawer {
       position: absolute;
       display: flex;
@@ -185,11 +123,6 @@ export default {
       padding-left: 48px;
       box-shadow: inset 0 1px 0 transparent;
       transition: background-color var(--transition-duration) var(--transition-timing), box-shadow var(--transition-duration) var(--transition-timing);
-      cursor: pointer;
-      
-      &:hover {
-        background-color: rgba(var(--text-color),0.05);
-      }
       
       &:after {
         position: absolute;
@@ -206,115 +139,17 @@ export default {
       }
 
       span {
+        position: absolute;
         width: 100%;
         margin-right: 24px;
         padding-bottom: 1px;
+        line-height: 18px;
         transition: visibility var(--transition-duration) var(--transition-timing), opacity var(--transition-duration) var(--transition-timing);
 
-        &.time {
-          position: absolute;
-          visibility: hidden;
-          opacity: 0;
-          line-height: 18px;
-
-          em {
-            display: block;
-            font-style: normal;
-            color: rgba(var(--text-color),0.35);
-          }
-        }
-      }
-    }
-
-    ul {
-      position: absolute;
-      overflow-y: auto;
-      bottom: 64px;
-      width: 384px;
-      height: 272px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-
-      li {
-        position: relative;
-        padding: 6.5px 0 7.5px 80px;
-        font-weight: 600;
-        cursor: default;
-
-        &:after {
-          position: absolute;
+        em {
           display: block;
-          content: '';
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          background-size: 8px;
-          background-position: center left 28px;
-          background-repeat: no-repeat;
-        }
-
-        &.revealed {
-          cursor: pointer;
-        }
-
-        &.revealed:hover:not(.active) {
-          background-color: rgba(var(--text-color),0.1);
-        }
-
-        &:not(.revealed) span {
-          color: transparent;
-          background: rgba(var(--text-color),0.15);
-        }
-
-        &.revealed:not(.listened):not(.active):after {
-          background-image: url('@/assets/icons/new.svg');
-          filter: var(--invert-filter);
-        }
-
-        &.listened,
-        &.active {
-          font-weight: normal;
-        }
-
-        &.active {
-          background-color: rgba(var(--text-color),0.15);
-
-          &:after {
-            background-size: 18px;
-            background-position: center left 23px;
-            background-image: url('@/assets/icons/playing.svg');
-            filter: var(--invert-filter);
-          }
-        }
-
-        &.primary {
-          position: relative;
-          margin-top: 24px;
-
-          &:not(:first-child):before {
-            position: absolute;
-            display: block;
-            content: '';
-            top: -12px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: rgba(var(--text-color),0.15);
-          }
-        }
-
-        &:first-child {
-          margin-top: 24px;
-        }
-
-        &:last-child {
-          margin-bottom: 24px;
-        }
-
-        span {
-          display: inline-block;
+          font-style: normal;
+          color: rgba(var(--text-color),0.35);
         }
       }
     }
@@ -333,53 +168,6 @@ export default {
 
     &.shadow {
       box-shadow: 0 0 0 2px rgb(var(--background-color));
-    }
-  }
-}
-
-@media (max-width: 600px) {
-  .controls {
-    display: flex;
-    align-items: flex-end;
-    width: unset;
-
-    .chapters {
-      flex: 1;
-      width: unset;
-
-      &.playing {
-        // flex: 0;
-        max-width: 150px;
-
-        .drawer:after {
-          display: none;
-        }
-      }
-
-      .drawer {
-        box-sizing: border-box;
-        width: calc(100% - 32px);
-
-        span {
-          -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 90%);
-          mask-image: linear-gradient(to right, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 90%);
-          transition: none;
-        }
-      }
-
-      ul {
-        width: 100%;
-        min-width: 384px;
-      }
-    }
-
-    button.jump {
-      display: none;
-      flex: 0 0 64px;
-
-      &.visible {
-        display: block;
-      }
     }
   }
 }

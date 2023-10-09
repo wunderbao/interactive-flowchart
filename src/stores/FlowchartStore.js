@@ -11,8 +11,6 @@ export const useFlowchartStore = defineStore('flowchart', {
     // narration/timestamps and their state
     narrationTimestamps: [],
     listenedTimestampIndexes: [],
-    narrationChapters: [],
-    listenedChapterIndexes: [],
 
     // state of playback
     playbackDuration: 0,
@@ -29,7 +27,6 @@ export const useFlowchartStore = defineStore('flowchart', {
       'teasedItems',
       'revealedItems',
       'listenedTimestampIndexes',
-      'listenedChapterIndexes',
       'playbackPosition'
     ],
     resumedFromLocalStorage: false,
@@ -79,20 +76,6 @@ export const useFlowchartStore = defineStore('flowchart', {
     // current narration node object
     currentNarrationNode(state) {
       return state.flowchartNodes[this.currentNarrationNodeId];
-    },
-    // current chapter index based on playback position
-    currentNarrationChapterIndex(state) {
-      const nextNarrationChapterIndex = state.narrationChapters.findIndex(chapter => chapter.timestamp > state.playbackPosition);
-
-      if (nextNarrationChapterIndex === -1) {
-        return Math.max(state.narrationChapters.length - 1, 0);
-      } else {
-        return Math.max(nextNarrationChapterIndex - 1, 0);
-      }
-    },
-    // current chapter object
-    currentNarrationChapter(state) {
-      return state.narrationChapters[this.currentNarrationChapterIndex];
     },
     // determines whether current node has moved away from narration (i.e. current node differs from current narration node)
     movedAwayFromNarration(state) {

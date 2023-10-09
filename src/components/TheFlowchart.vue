@@ -30,7 +30,7 @@ export default {
     'startPlayback',
     'startExplorationDuringPlayback',
     'stopExplorationDuringPlayback',
-    'hideChapterListAndIntroPanel'
+    'toggleIntroPanel'
   ],
 
   data() {
@@ -127,7 +127,7 @@ export default {
             this.$emit('startExplorationDuringPlayback');
           }
 
-          this.$emit('hideChapterListAndIntroPanel');
+          this.$emit('toggleIntroPanel', true);
         });
       });
 
@@ -225,38 +225,8 @@ export default {
         }
       });
 
-      this.collectNarrationChapters();
       this.addNodeInteractivity();
       this.moveToNode(this.flowchartStore.currentNode);
-    },
-
-    // populate flowchartStore’s narrationChapters array with non-label nodes
-    collectNarrationChapters() {
-      const alreadyListedPrimaryChapters = [];
-
-      this.flowchartStore.narrationTimestamps.forEach(event => {
-        const eventId = event[0];
-        const eventTimestamp = event[1];
-
-        const node = this.flowchartStore.flowchartNodes[eventId];
-        const firstItemOrNoDirectRepetition = this.flowchartStore.narrationChapters.length === 0 || this.flowchartStore.narrationChapters[this.flowchartStore.narrationChapters.length - 1].id !== eventId;
-        
-        if (node.type !== 'label' && firstItemOrNoDirectRepetition) {
-          const chapterType = node.type === 'chapter' && alreadyListedPrimaryChapters.indexOf(eventId) === -1
-            ? 'primary'
-            : 'secondary';
-
-          this.flowchartStore.narrationChapters.push({
-            id: eventId,
-            element: node.element,
-            type: chapterType,
-            label: node.label,
-            timestamp: eventTimestamp,
-          });
-
-          alreadyListedPrimaryChapters.push(eventId);
-        }
-      });
     },
 
     // attach click listeners to node elements
@@ -418,13 +388,6 @@ export default {
       }
     },
 
-    // add chapter index to listenedChapterIndexes array
-    markChapterAsListened(index) {
-      if (this.flowchartStore.listenedChapterIndexes.indexOf(index) === -1) {
-        this.flowchartStore.listenedChapterIndexes.push(index);
-      }
-    },
-
     // create trimmed and truncated label from textContent of node element
     truncatedLabelFromTextContent(label) {
       label = label.replaceAll('\n', ' ').trim();
@@ -465,21 +428,11 @@ export default {
       this.markTimestampAsListened(this.flowchartStore.currentNarrationNodeIndex);
     },
 
-    // when the narration chapter index changes, mark that chapter as listened
-    'flowchartStore.currentNarrationChapterIndex'() {
-      this.markChapterAsListened(this.flowchartStore.currentNarrationChapterIndex);
-    },
-
     // when playback is started, move to current node (if current node
     // does not change, no movement is otherwise initiated)
     'flowchartStore.playbackActive'() {
       if (this.flowchartStore.playbackActive) {
         this.moveToNode(this.flowchartStore.currentNode);
-      }
-
-      // mark first chapter as listened if playback was started right from the start
-      if (this.flowchartStore.listenedChapterIndexes.length === 0) {
-        this.markChapterAsListened(this.flowchartStore.currentNarrationChapterIndex);
       }
     },
 
