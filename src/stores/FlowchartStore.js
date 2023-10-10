@@ -55,7 +55,7 @@ export const useFlowchartStore = defineStore('flowchart', {
     },
     // current index in narrationTimestamps based on media playback position
     currentNarrationNodeIndex(state) {
-      const nextNarrationNodeIndex = state.narrationTimestamps.findIndex(event => event[1] > state.playbackPosition);
+      const nextNarrationNodeIndex = state.narrationTimestamps.findIndex(event => event[0] > state.playbackPosition);
 
       if (nextNarrationNodeIndex === -1) {
         // no more narration events after playback position, thus return last index
@@ -68,7 +68,7 @@ export const useFlowchartStore = defineStore('flowchart', {
     // current narration node ID
     currentNarrationNodeId(state) {
       if (state.narrationTimestamps.length > 0) {
-        return state.narrationTimestamps[this.currentNarrationNodeIndex][0];
+        return state.narrationTimestamps[this.currentNarrationNodeIndex][1];
       } else {
         return false;
       }
@@ -83,7 +83,7 @@ export const useFlowchartStore = defineStore('flowchart', {
     },
     // determines whether jump action is available (i.e. if jumpNarrationToNode action can be triggered from current node)
     jumpActionAvailable(state) {
-      return this.movedAwayFromNarration && state.narrationTimestamps.findIndex(event => event[0] === state.currentNodeId) !== -1;
+      return this.movedAwayFromNarration && state.narrationTimestamps.findIndex(event => event[1] === state.currentNodeId) !== -1;
     },
     // determines whether feedback prompt is visible (revealed after threshold of revealed items has been reached)
     feedbackPromptAvailable() {
@@ -91,12 +91,23 @@ export const useFlowchartStore = defineStore('flowchart', {
     },
   },
   actions: {
-    // fetch timestamps from public JSON
+    // fetch timestamps from public TXT (Audacity labels export)
     async fetchTimestamps() {
-      fetch('timestamps.json')
-        .then(response => response.json())
-        .then(data => this.narrationTimestamps = data)
+      fetch('timestamps.txt')
+        .then(response => response.text())
+        .then(text => this.narrationTimestamps = this.convertTimestamps(text))
         .catch(error => console.log(error));
+    },
+    // convert TSV content to nested array
+    convertTimestamps(text) {
+      const lines = text.split('\n').slice(0, -1);
+
+      const timestamps = lines.map(line => {
+        const properties = line.split('\t');
+        return [properties[0], properties[2]];
+      });
+
+      return timestamps;
     },
     // save all parameters relevant for restoring the state of the chart to local storage
     saveToLocalStorage() {
