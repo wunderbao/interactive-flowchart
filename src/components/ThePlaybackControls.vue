@@ -118,33 +118,15 @@ export default {
       align-items: center;
       bottom: 0;
       left: 32px;
-      width: 304px;
+      right: 0;
       height: 64px;
       padding-left: 48px;
       box-shadow: inset 0 1px 0 transparent;
-      transition: background-color var(--transition-duration) var(--transition-timing), box-shadow var(--transition-duration) var(--transition-timing);
-      
-      &:after {
-        position: absolute;
-        display: block;
-        content: '';
-        top: 24px;
-        right: 22px;
-        width: 16px;
-        height: 16px;
-        background-image: url('@/assets/icons/chevron.svg');
-        transform: rotate(-180deg);
-        transition: transform var(--transition-duration) var(--transition-timing);
-        filter: var(--invert-filter);
-      }
 
       span {
-        position: absolute;
         width: 100%;
-        margin-right: 24px;
         padding-bottom: 1px;
         line-height: 18px;
-        transition: visibility var(--transition-duration) var(--transition-timing), opacity var(--transition-duration) var(--transition-timing);
 
         em {
           display: block;
