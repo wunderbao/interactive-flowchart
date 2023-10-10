@@ -8,7 +8,11 @@
     @playing="flowchartStore.mediaBuffering = false"
     @ended="stopPlayback()"
   >
-    <source src="narration.m4a" type="audio/mp4" />
+    <source
+      src="narration.m4a"
+      type="audio/mp4"
+      @error="flowchartStore.narrationEnabled = false"
+    />
   </audio>
   <TheFlowchart
     v-if="flowchartStore.currentNarrationNodeId"
@@ -27,6 +31,7 @@
     @toggleIntroPanel="toggleIntroPanel()"
   />
   <ThePlaybackControls
+    v-if="flowchartStore.narrationEnabled && flowchartStore.currentNarrationNodeId"
     :class="{ 'dark-scheme': this.darkScheme }"
     @jumpNarrationToNode="jumpNarrationToNode"
     @togglePlayback="togglePlayback()"

@@ -9,6 +9,7 @@ export const useFlowchartStore = defineStore('flowchart', {
     revealedItems: [],
 
     // narration/timestamps and their state
+    narrationEnabled: true,
     narrationTimestamps: [],
     listenedTimestampIndexes: [],
 
@@ -94,9 +95,17 @@ export const useFlowchartStore = defineStore('flowchart', {
     // fetch timestamps from public TXT (Audacity labels export)
     async fetchTimestamps() {
       fetch('timestamps.txt')
+        .then(response => {
+          if (!response.ok) throw Error(response.status);
+          return response;
+        })
         .then(response => response.text())
         .then(text => this.narrationTimestamps = this.convertTimestamps(text))
-        .catch(error => console.log(error));
+        .catch(error => {
+          console.log(error);
+          this.narrationTimestamps = [[0, 'n-001']];
+          this.narrationEnabled = false;
+        });
     },
     // convert TSV content to nested array
     convertTimestamps(text) {
