@@ -17,6 +17,7 @@
     @startPlayback="startPlayback"
     @startExplorationDuringPlayback="startExplorationDuringPlayback()"
     @stopExplorationDuringPlayback="stopExplorationDuringPlayback()"
+    @toggleIntroPanel="toggleIntroPanel"
     @mousedown="toggleIntroPanel(true)"
   />
   <TheIntroPanel
@@ -26,6 +27,7 @@
     @toggleIntroPanel="toggleIntroPanel()"
   />
   <ThePlaybackControls
+    :class="{ 'dark-scheme': this.darkScheme }"
     @jumpNarrationToNode="jumpNarrationToNode"
     @togglePlayback="togglePlayback()"
     @stopExplorationDuringPlayback="stopExplorationDuringPlayback()"
@@ -54,6 +56,7 @@ export default {
   data() {
     return {
       userSetup: {},
+      darkScheme: false,
 
       // return to playback timeout reference and auto-return delay
       returnToPlaybackTimeout: undefined,
@@ -79,7 +82,7 @@ export default {
       'resumeFromLocalStorage'
     ]),
 
-    // ...
+    // fetch and apply user setup from public JSON file
     async fetchUserSetup() {
       fetch('setup.json')
         .then(response => response.json())
@@ -89,7 +92,6 @@ export default {
         })
         .catch(error => console.log(error));
     },
-
     applyUserSetup() {
       document.title = this.userSetup.title;
 
@@ -97,9 +99,8 @@ export default {
         document.documentElement.style.setProperty('--' + property, this.hexToRgb(color));
       }
 
-      if (this.userSetup['dark-mode']) {
-        document.documentElement.style.setProperty('--invert-filter', 'invert(1)');
-      }
+      // detect if background color is dark or light (relevant for icon colors)
+      this.darkScheme = this.isDarkColor(this.userSetup.colors['background-color']);
     },
 
     // update the current node ID
@@ -223,6 +224,17 @@ export default {
       }
     },
 
+    isDarkColor(hex) {
+      const rgb = this.hexToRgb(hex).split(',');
+      const hsp = Math.sqrt(
+        0.299 * (rgb[0] * rgb[0]) +
+        0.587 * (rgb[1] * rgb[1]) +
+        0.114 * (rgb[2] * rgb[2])
+      );
+
+      return hsp > 127.5 ? false : true;
+    },
+
     hexToRgb(hex) {
       const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
       hex = hex.replace(shorthandRegex, function(m, r, g, b) {
@@ -297,6 +309,6 @@ body {
 }
 
 *:focus-visible {
-  box-shadow: 0 0 0 2px rgb(var(--background-color)), 0 0 0 4px var(--focus-color) !important;
+  box-shadow: 0 0 0 2px rgb(var(--background-color)), 0 0 0 4px rgb(var(--text-color)) !important;
 }
 </style>

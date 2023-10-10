@@ -292,7 +292,7 @@ button.open {
   *:focus-visible {
     position: relative;
     background: rgb(var(--intro-background-color));
-    box-shadow: 0 0 0 2px rgb(var(--intro-background-color)), 0 0 0 4px var(--focus-color) !important;
+    box-shadow: 0 0 0 2px rgb(var(--intro-background-color)), 0 0 0 4px rgb(var(--text-color)) !important;
   }
 }
 

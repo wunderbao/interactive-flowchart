@@ -51,9 +51,10 @@ button {
   }
 
   &.disabled {
-    border-color: rgba(255,255,255,0.25);
-    background-color: var(--background-color);
+    border-color: rgba(var(--text-color),0.15);
+    background-color: rgba(var(--background-color),0.65);
     cursor: not-allowed;
+    filter: var(--invert-filter);
 
     &:hover {
       transform: none;
@@ -79,6 +80,10 @@ button {
 
     &.disabled {
       background-image: url('@/assets/icons/jump-disabled.svg');
+
+      @at-root .controls.dark-scheme button.icon-jump.disabled {
+        background-image: url('@/assets/icons/jump-disabled-light.svg');
+      }
     }
   }
 
