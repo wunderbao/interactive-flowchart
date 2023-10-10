@@ -111,26 +111,26 @@ export default {
 
     // jump playback position to node (either current node or node clicked during playback)
     jumpNarrationToNode(nodeId) {
-      const nodeOccurrencesInNarration = this.flowchartStore.narrationTimestamps.filter(event => event[0] === nodeId);
+      const nodeOccurrencesInNarration = this.flowchartStore.narrationTimestamps.filter(event => event[1] === nodeId);
 
       if (nodeOccurrencesInNarration.length !== 0) {
         // if playback is active, jump to the next occurrence after the current playback position or the final one if none exists
         if (this.flowchartStore.playbackActive) {
-          const nextNodeOccurrenceAfterPlaybackPosition = nodeOccurrencesInNarration.find(event => event[1] >= this.flowchartStore.playbackPosition);
+          const nextNodeOccurrenceAfterPlaybackPosition = nodeOccurrencesInNarration.find(event => event[0] >= this.flowchartStore.playbackPosition);
 
           if (nextNodeOccurrenceAfterPlaybackPosition) {
-            this.setPlaybackPosition(nextNodeOccurrenceAfterPlaybackPosition[1]);
+            this.setPlaybackPosition(nextNodeOccurrenceAfterPlaybackPosition[0]);
           } else {
             const lastNodeOccurrence = nodeOccurrencesInNarration[nodeOccurrencesInNarration.length - 1];
-            this.setPlaybackPosition(lastNodeOccurrence[1]);
+            this.setPlaybackPosition(lastNodeOccurrence[0]);
           }
         // if playback is paused, jump to the first unlistened occurrence in narration sequence or the final one if none exists
         } else {
-          let furthestNodeOccurrence = ['', 0];
+          let furthestNodeOccurrence = [0, ''];
 
           const noUnlistenedOccurrences = nodeOccurrencesInNarration.every(event => {
             if (this.flowchartStore.listenedTimestampIndexes.indexOf(this.flowchartStore.narrationTimestamps.indexOf(event)) === -1) {
-              this.setPlaybackPosition(event[1]);
+              this.setPlaybackPosition(event[0]);
               return false;
             } else {
               furthestNodeOccurrence = event;
@@ -139,7 +139,7 @@ export default {
           });
 
           if (noUnlistenedOccurrences) {
-            this.setPlaybackPosition(furthestNodeOccurrence[1]);
+            this.setPlaybackPosition(furthestNodeOccurrence[0]);
           }
         }
       } else {
