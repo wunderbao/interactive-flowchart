@@ -4,7 +4,7 @@ export const useFlowchartStore = defineStore('flowchart', {
   state: () => ({
     // nodes and their state
     flowchartNodes: {},
-    currentNodeId: 'n001',
+    currentNodeId: 'n-001',
     teasedItems: [],
     revealedItems: [],
 

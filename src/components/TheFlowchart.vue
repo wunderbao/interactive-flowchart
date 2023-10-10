@@ -39,6 +39,9 @@ export default {
       flowchartContainer: undefined,
       flowchartElement: undefined,
 
+      // ...
+      itemStates: ['teased', 'revealed', 'next', 'current'],
+
       // flowchart dimensions
       flowchartWidth: 0,
       flowchartHeight: 0,
@@ -134,7 +137,7 @@ export default {
       // panning/scrolling of flowchart via click-and-drag
       this.flowchartContainer.addEventListener('mousedown', event => {
         // only start panning if drag was not initiated above visible node
-        if (!event.target.closest('g[id^=n].teased, g[id^=n].revealed')) {
+        if (!event.target.closest('g[id^=n-].teased, g[id^=n-].revealed, g[id^=n-].next, g[id^=n-].current')) {
           if (this.flowchartStore.playbackActive) {
             this.$emit('startExplorationDuringPlayback');
           }
@@ -180,49 +183,69 @@ export default {
 
     // populate flowchartStore’s flowchartNodes object with nodes from svg source
     collectNodes() {
-      const nodes = this.flowchartElement.querySelectorAll('g[id^=n]');
+      const nodes = [...this.flowchartElement.querySelectorAll('g[id^=n-]')];
+      const primaryNodes = nodes.filter(node => !isNaN(node.id.slice(-1)));
+      const alternateNodes = nodes.filter(node => !primaryNodes.includes(node));
 
-      nodes.forEach(nodeElement => {
-        const nodeProperties = nodeElement.id.split('_');
-        const nodeId = nodeProperties[0];
+      primaryNodes.forEach(nodeElement => {
+        const nodeId = nodeElement.id;
+
+        const alternates = {};
+        const alternatesArray = alternateNodes.filter(alternateNode => alternateNode.id.startsWith(nodeId));
+
+        alternatesArray.forEach(alternateNode => {
+          alternates[alternateNode.id.split('_')[1]] = alternateNode;
+        });
         
         this.flowchartStore.flowchartNodes[nodeId] = {
           element: nodeElement,
-          type: nodeProperties[1],
-          label: this.truncatedLabelFromTextContent(nodeElement.textContent),
+          alternates,
           outgoing: [],
           incoming: []
         };
       });
 
-      const edges = this.flowchartElement.querySelectorAll('g[id^=e_]');
+      const edges = [...this.flowchartElement.querySelectorAll('g[id^=e-]')];
+      const primaryEdges = edges.filter(edge => !isNaN(edge.id.slice(-1)));
+      const alternateEdges = edges.filter(edge => !primaryEdges.includes(edge));
 
-      edges.forEach(edgeElement => {
-        const edgeProperties = edgeElement.id.split('_');
-        const edgeFrom = 'n' + edgeProperties[1];
-        const edgeTo = 'n' + edgeProperties[2];
-        const bidirectionalEdge = edgeProperties.length > 3;
+      primaryEdges.forEach(edgeElement => {
+        const edgeNodes = edgeElement.id.split('-');
+        const edgeFrom = 'n-' + edgeNodes[1];
+        const edgeTo = 'n-' + edgeNodes[2];
+        // const bidirectionalEdge = edgeNodes.length > 3;
+
+        const alternates = {};
+        const alternatesArray = alternateEdges.filter(alternateEdge => alternateEdge.id.startsWith(edgeElement.id));
+
+        alternatesArray.forEach(alternateEdge => {
+          alternates[alternateEdge.id.split('_')[1]] = alternateEdge;
+        });
 
         this.flowchartStore.flowchartNodes[edgeFrom].outgoing.push({
           edge: edgeElement,
-          node: this.flowchartStore.flowchartNodes[edgeTo]
+          node: this.flowchartStore.flowchartNodes[edgeTo],
+          alternates
         });
         this.flowchartStore.flowchartNodes[edgeTo].incoming.push({
           edge: edgeElement,
-          node: this.flowchartStore.flowchartNodes[edgeFrom]
+          node: this.flowchartStore.flowchartNodes[edgeFrom],
+          alternates
         });
 
         // if edge is bidirectional, additionally add the same edge in reverse to the destination/origin node
-        if (bidirectionalEdge) {
-          this.flowchartStore.flowchartNodes[edgeTo].outgoing.push({
-            edge: edgeElement,
-            node: this.flowchartStore.flowchartNodes[edgeFrom]
-          });
-          this.flowchartStore.flowchartNodes[edgeFrom].incoming.push({
-            edge: edgeElement,
-            node: this.flowchartStore.flowchartNodes[edgeTo]
-          });
-        }
+        // if (bidirectionalEdge) {
+        //   this.flowchartStore.flowchartNodes[edgeTo].outgoing.push({
+        //     edge: edgeElement,
+        //     node: this.flowchartStore.flowchartNodes[edgeFrom],
+        //     alternates
+        //   });
+        //   this.flowchartStore.flowchartNodes[edgeFrom].incoming.push({
+        //     edge: edgeElement,
+        //     node: this.flowchartStore.flowchartNodes[edgeTo],
+        //     alternates
+        //   });
+        // }
       });
 
       this.addNodeInteractivity();
@@ -235,7 +258,9 @@ export default {
 
       Object.entries(this.flowchartStore.flowchartNodes).forEach(([nodeId, node]) => {
         node.element.addEventListener('click', function() {
-          if (this.classList.contains('revealed')) {
+          const nodeClickable = this.classList.contains('revealed') || this.classList.contains('next') || this.classList.contains('current');
+
+          if (nodeClickable) {
             // stop exploration during playback if active
             if (vueInstance.flowchartStore.playbackActive && vueInstance.flowchartStore.exploringDuringPlayback) {
               vueInstance.$emit('stopExplorationDuringPlayback');
@@ -254,13 +279,15 @@ export default {
             }
           } else if (this.classList.contains('teased')) {
             // if teased node is clicked, trigger the pulse animation for all incoming nodes
-            node.incoming.forEach(incomingNode => {
-              const nodeElement = incomingNode.node.element;
+            node.incoming.forEach(incomingObject => {
+              let incomingNode = incomingObject.node.element;
 
-              if (nodeElement.classList.contains('revealed')) {
-                nodeElement.classList.remove('pulse');
-                void nodeElement.getBBox(); // trigger reflow
-                nodeElement.classList.add('pulse');
+              if (vueInstance.flowchartStore.revealedItems.includes(incomingNode.id)) {
+                incomingNode = vueInstance.findReplacementElement(incomingNode, incomingNode.classList[0]) ?? incomingNode;
+  
+                incomingNode.classList.remove('pulse');
+                void incomingNode.getBBox(); // trigger reflow
+                incomingNode.classList.add('pulse');
               }
             });
 
@@ -339,16 +366,8 @@ export default {
 
     // update classes/appearance of svg elements
     updateAppearance() {
-      this.flowchartElement.querySelectorAll('g').forEach(element => {
-        element.classList.remove('current', 'next', 'revealed', 'teased');
-      });
-
-      this.flowchartStore.currentNode.element.classList.add('current');
-      this.markItemAsRevealed(this.flowchartStore.currentNode.element);
-
+      // outgoing nodes are iterated over again further down, sequence could be improved
       this.flowchartStore.currentNode.outgoing.forEach(item => {
-        item.edge.classList.add('next');
-        item.node.element.classList.add('next');
         this.markItemAsRevealed(item.edge);
         this.markItemAsRevealed(item.node.element);
 
@@ -358,13 +377,46 @@ export default {
         });
       });
 
-      this.flowchartStore.revealedItems.forEach(id => {
-        document.getElementById(id).classList.add('revealed');
+      this.flowchartElement.querySelectorAll('g').forEach(element => {
+        element.classList.remove(...this.itemStates, 'replaced-out', 'replaced-in');
       });
 
       this.flowchartStore.teasedItems.forEach(id => {
         document.getElementById(id).classList.add('teased');
       });
+
+      this.flowchartStore.revealedItems.forEach(id => {
+        document.getElementById(id).classList.remove('teased');
+        document.getElementById(id).classList.add('revealed');
+      });
+
+      this.flowchartStore.currentNode.outgoing.forEach(item => {
+        item.edge.classList.remove('teased', 'revealed');
+        item.edge.classList.add('next');
+        item.node.element.classList.remove('teased', 'revealed');
+        item.node.element.classList.add('next');
+      });
+
+      this.flowchartStore.currentNode.element.classList.remove('teased', 'revealed', 'next');
+      this.flowchartStore.currentNode.element.classList.add('current');
+      this.markItemAsRevealed(this.flowchartStore.currentNode.element);
+
+      // replace primary elements with alternate state variants if those exist
+      this.itemStates.forEach(state => {
+        this.flowchartElement.querySelectorAll('g.' + state).forEach(element => {
+          const replacementElement = this.findReplacementElement(element, state);
+
+          if (replacementElement) {
+            element.classList.add('replaced-out');
+            replacementElement.classList.add('replaced-in');
+          }
+        })
+      });
+    },
+
+    // return replacement for element and certain state if it exists
+    findReplacementElement(element, state) {
+      return document.getElementById(element.id + '_' + state);
     },
 
     // add node element to revealedItems array
@@ -385,19 +437,6 @@ export default {
     markTimestampAsListened(index) {
       if (this.flowchartStore.listenedTimestampIndexes.indexOf(index) === -1) {
         this.flowchartStore.listenedTimestampIndexes.push(index);
-      }
-    },
-
-    // create trimmed and truncated label from textContent of node element
-    truncatedLabelFromTextContent(label) {
-      label = label.replaceAll('\n', ' ').trim();
-
-      if (label.length <= 32) {
-        return label;
-      } else {
-        const words = label.substring(0, 32).split(' ');
-        words.pop();
-        return words.join(' ') + '…';
       }
     }
   },
@@ -489,229 +528,57 @@ export default {
     }
 
     // nodes
-    g[id^=n] {
+    g[id^=n-] {
       opacity: 0;
+      pointer-events: none;
 
-      &.pulse {
-        animation: pulse 0.6s 1 forwards ease-in-out;
+      &:hover {
+        cursor: pointer;
       }
 
-      path, text, rect {
-        transition: all 0.075s var(--transition-timing);
+      // primary nodes (ending in a number)
+      &[id$='0'],
+      &[id$='1'],
+      &[id$='2'],
+      &[id$='3'],
+      &[id$='4'],
+      &[id$='5'],
+      &[id$='6'],
+      &[id$='7'],
+      &[id$='8'],
+      &[id$='9'] {
+        pointer-events: all;
       }
 
-      path {
-        fill: var(--teased-color);
-        stroke: transparent;
+      &.teased:not(.replaced-out) {
+        opacity: 0.2;
       }
 
-      text {
-        fill: transparent;
-      }
-
-      &[id$=label] {
-        rect {
-          fill: var(--teased-color);
-          fill-opacity: 1;
-        }
-      }
-
-      // all visible nodes (teased and revealed)
-      &.teased, &.revealed {
+      &.revealed:not(.replaced-out),
+      &.next:not(.replaced-out),
+      &.current:not(.replaced-out),
+      &.replaced-in {
         opacity: 1;
       }
 
-      &.teased:not(.revealed) {
-        cursor: not-allowed;
-      }
-
-      // revealed nodes (interactive and text visible)
-      &.revealed {
-        path {
-          opacity: 0.35;
-          fill: var(--background-color);
-          stroke: #fff;
-        }
-
-        text {
-          fill: rgba(255,255,255,0.75);
-        }
-
-        &[id$=chapter], &[id$=question] {
-          path {
-            fill: rgba(255,255,255,0.4);
-          }
-        }
-
-        &[id$=definition] {
-          path {
-            fill: rgba(0,0,0,0.001);
-          }
-
-          path:first-of-type {
-            stroke: transparent;
-          }
-        }
-
-        &[id$=collection] {
-          path:first-of-type {
-            fill: rgba(0,0,0,0.001);
-            stroke: transparent;
-          }
-        }
-
-        &[id$=label] {
-          rect {
-            fill: transparent;
-          }
-
-          path {
-            opacity: 1;
-            stroke: #C9C9C9;
-          }
-        }
-
-        &:hover {
-          cursor: pointer;
-
-          path {
-            opacity: 0.5;
-          }
-
-          text {
-            fill: #fff;
-          }
-
-          &[id$=label] {
-            path {
-              opacity: 1;
-              stroke: #fff;
-            }
-          }
-        }
-      }
-
-      // next nodes and currently selected node
-      &.next, &.current {
-        path {
-          opacity: 0.85;
-          stroke: rgb(var(--accent-color));
-        }
-
-        text {
-          fill: rgb(var(--accent-color));
-        }
-
-        &[id$=chapter], &[id$=question] {
-          path {
-            fill: rgba(var(--accent-color), 0.25);
-          }
-        }
-
-        &[id$=label] {
-          path {
-            opacity: 1;
-            stroke: rgb(var(--accent-color));
-          }
-        }
-
-        &:not(.current):hover {
-          path {
-            opacity: 0.85;
-            stroke: rgb(var(--accent-color-hover));
-          }
-
-          text {
-            fill: rgb(var(--accent-color-hover));
-          }
-
-          &[id$=chapter], &[id$=question] {
-            path {
-              fill: rgba(var(--accent-color-hover), 0.3);
-            }
-          }
-
-          &[id$=definition], &[id$=collection] {
-            path:first-of-type {
-              stroke: transparent;
-            }
-          }
-
-          &[id$=label] {
-            path {
-              opacity: 1;
-              stroke: rgb(var(--accent-color-hover));
-            }
-          }
-        }
-      }
-
-      // currently selected node
-      &.current {
-        &[id$=definition] {
-          path:last-of-type {
-            opacity: 0;
-          }
-        }
-
-        &:not([id$=label]) {
-          path {
-            opacity: 1;
-            fill: rgb(var(--accent-color));
-          }
-
-          text {
-            fill: #fff;
-          }
-        }
-
-        &[id$=label] {
-          text {
-            fill: #fff;
-          }
-
-          rect {
-            fill: rgb(var(--accent-color));
-          }
-
-          path {
-            stroke: #fff;
-          }
-        }
+      &.pulse {
+        animation: pulse 0.6s 1 backwards ease-in-out;
       }
     }
 
     // edges
-    g[id^=e_] {
+    g[id^=e-] {
       opacity: 0;
       pointer-events: none;
 
-      path, text {
-        fill: var(--teased-color);
+      &.teased:not(.replaced-out) {
+        opacity: 0.2;
       }
 
-      &.teased, &.revealed {
+      &.revealed:not(.replaced-out),
+      &.next:not(.replaced-out),
+      &.replaced-in {
         opacity: 1;
-      }
-
-      &.revealed {
-        path {
-          fill: rgba(255,255,255,0.25);
-        }
-
-        text {
-          fill: rgba(255,255,255,0.4);
-        }
-      }
-
-      &.next {
-        path {
-          fill: rgba(var(--accent-color), 0.6);
-        }
-
-        text {
-          fill: rgba(var(--accent-color), 0.75);
-        }
       }
     }
   }
