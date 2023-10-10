@@ -2,8 +2,8 @@
     "title": "Flowchart Template",
     "subtitle": "Mapping and narrating a personal dilemma through an interactive flowchart",
     "colors": {
-        "background-color": "#F8F3EB",
-        "intro-background-color": "#FFFFFF",
+        "background-color": "#F2EEE6",
+        "intro-background-color": "#FFFDFA",
         "text-color": "#4D5B80",
         "accent-color": "#1C9E9E"
     },

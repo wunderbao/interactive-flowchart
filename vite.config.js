@@ -12,5 +12,11 @@ export default defineConfig({
     }
   },
   base: './',
-  assetsInclude: ['**/*.m4a']
+  build: {
+    rollupOptions: {
+      external: [
+        'narration.m4a'
+      ]
+    }
+  }
 })
