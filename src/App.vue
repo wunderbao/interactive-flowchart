@@ -9,8 +9,8 @@
     @ended="stopPlayback()"
   >
     <source
-      src="narration.m4a"
-      type="audio/mp4"
+      src="narration.mp3"
+      type="audio/mp3"
       @error="flowchartStore.narrationEnabled = false"
     />
   </audio>
