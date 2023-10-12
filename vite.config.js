@@ -11,12 +11,5 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  base: './',
-  build: {
-    rollupOptions: {
-      external: [
-        'narration.m4a'
-      ]
-    }
-  }
+  base: './'
 })
