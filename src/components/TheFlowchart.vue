@@ -258,7 +258,7 @@ export default {
 
       Object.entries(this.flowchartStore.flowchartNodes).forEach(([nodeId, node]) => {
         node.element.addEventListener('click', function() {
-          const nodeClickable = this.classList.contains('revealed') || this.classList.contains('next') || this.classList.contains('current');
+          const nodeClickable = ['revealed', 'next', 'current'].includes(this.getAttribute('data-state'));
 
           if (nodeClickable) {
             // stop exploration during playback if active
@@ -277,13 +277,13 @@ export default {
             } else {
               vueInstance.moveToNode(vueInstance.flowchartStore.currentNode, true);
             }
-          } else if (this.classList.contains('teased')) {
+          } else if (this.getAttribute('data-state') === 'teased') {
             // if teased node is clicked, trigger the pulse animation for all incoming nodes
             node.incoming.forEach(incomingObject => {
               let incomingNode = incomingObject.node.element;
 
               if (vueInstance.flowchartStore.revealedItems.includes(incomingNode.id)) {
-                incomingNode = vueInstance.findReplacementElement(incomingNode, incomingNode.classList[0]) ?? incomingNode;
+                incomingNode = vueInstance.findReplacementElement(incomingNode, incomingNode.getAttribute('data-state')) ?? incomingNode;
   
                 incomingNode.classList.remove('pulse');
                 void incomingNode.getBBox(); // trigger reflow
@@ -378,32 +378,28 @@ export default {
       });
 
       this.flowchartElement.querySelectorAll('[id^=n-], [id^=e-]').forEach(element => {
-        element.classList.remove(...this.itemStates, 'replaced-out', 'replaced-in');
+        element.classList.remove('replaced-out', 'replaced-in');
       });
 
       this.flowchartStore.teasedItems.forEach(id => {
-        document.getElementById(id).classList.add('teased');
+        document.getElementById(id).setAttribute('data-state', 'teased');
       });
 
       this.flowchartStore.revealedItems.forEach(id => {
-        document.getElementById(id).classList.remove('teased');
-        document.getElementById(id).classList.add('revealed');
+        document.getElementById(id).setAttribute('data-state', 'revealed');
       });
 
       this.flowchartStore.currentNode.outgoing.forEach(item => {
-        item.edge.classList.remove('teased', 'revealed');
-        item.edge.classList.add('next');
-        item.node.element.classList.remove('teased', 'revealed');
-        item.node.element.classList.add('next');
+        item.edge.setAttribute('data-state', 'next');
+        item.node.element.setAttribute('data-state', 'next');
       });
 
-      this.flowchartStore.currentNode.element.classList.remove('teased', 'revealed', 'next');
-      this.flowchartStore.currentNode.element.classList.add('current');
+      this.flowchartStore.currentNode.element.setAttribute('data-state', 'current');
       this.markItemAsRevealed(this.flowchartStore.currentNode.element);
 
       // replace primary elements with alternate state variants if those exist
       this.itemStates.forEach(state => {
-        this.flowchartElement.querySelectorAll('[id^=n-].' + state +', [id^=e-].' + state).forEach(element => {
+        this.flowchartElement.querySelectorAll('[data-state=' + state +']').forEach(element => {
           const replacementElement = this.findReplacementElement(element, state);
 
           if (replacementElement) {
@@ -550,13 +546,17 @@ export default {
         pointer-events: all;
       }
 
-      &.teased:not(.replaced-out) {
+      &[data-state=teased] {
+        cursor: not-allowed;
+      }
+
+      &[data-state=teased]:not(.replaced-out) {
         opacity: 0.2;
       }
 
-      &.revealed:not(.replaced-out),
-      &.next:not(.replaced-out),
-      &.current:not(.replaced-out),
+      &[data-state=revealed]:not(.replaced-out),
+      &[data-state=next]:not(.replaced-out),
+      &[data-state=current]:not(.replaced-out),
       &.replaced-in {
         opacity: 1;
       }
@@ -571,12 +571,12 @@ export default {
       opacity: 0;
       pointer-events: none;
 
-      &.teased:not(.replaced-out) {
+      &[data-state=teased]:not(.replaced-out) {
         opacity: 0.2;
       }
 
-      &.revealed:not(.replaced-out),
-      &.next:not(.replaced-out),
+      &[data-state=revealed]:not(.replaced-out),
+      &[data-state=next]:not(.replaced-out),
       &.replaced-in {
         opacity: 1;
       }
