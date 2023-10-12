@@ -106,9 +106,9 @@ export default {
       this.flowchartElement = element;
 
       // store initial dimensions of flowchart svg elements for scaling
-      const boundingClientRect = element.getBoundingClientRect();
-      this.flowchartWidth = boundingClientRect.width;
-      this.flowchartHeight = boundingClientRect.height;
+      const viewBox = element.viewBox.baseVal;
+      this.flowchartWidth = viewBox.width;
+      this.flowchartHeight = viewBox.height;
 
       // set window dimension properties and scaled flowchart width and height upon window resize
       window.addEventListener('resize', () => {
