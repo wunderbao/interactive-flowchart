@@ -95,10 +95,6 @@ button {
     background-image: url('@/assets/icons/loading.svg');
     animation: spin 0.75s infinite;
   }
-
-  &.icon-feedback {
-    background-image: url('@/assets/icons/feedback.svg');
-  }
 }
 
 @keyframes spin {
