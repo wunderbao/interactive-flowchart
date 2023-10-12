@@ -113,7 +113,7 @@ export const useFlowchartStore = defineStore('flowchart', {
 
       const timestamps = lines.map(line => {
         const properties = line.split('\t');
-        return [properties[0], properties[2]];
+        return [+properties[0], properties[properties.length - 1]];
       });
 
       return timestamps;
