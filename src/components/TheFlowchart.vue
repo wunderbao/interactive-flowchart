@@ -137,7 +137,7 @@ export default {
       // panning/scrolling of flowchart via click-and-drag
       this.flowchartContainer.addEventListener('mousedown', event => {
         // only start panning if drag was not initiated above visible node
-        if (!event.target.closest('g[id^=n-].teased, g[id^=n-].revealed, g[id^=n-].next, g[id^=n-].current')) {
+        if (!event.target.closest('[id^=n-].teased, [id^=n-].revealed, [id^=n-].next, [id^=n-].current')) {
           if (this.flowchartStore.playbackActive) {
             this.$emit('startExplorationDuringPlayback');
           }
@@ -183,7 +183,7 @@ export default {
 
     // populate flowchartStore’s flowchartNodes object with nodes from svg source
     collectNodes() {
-      const nodes = [...this.flowchartElement.querySelectorAll('g[id^=n-]')];
+      const nodes = [...this.flowchartElement.querySelectorAll('[id^=n-]')];
       const primaryNodes = nodes.filter(node => !isNaN(node.id.slice(-1)));
       const alternateNodes = nodes.filter(node => !primaryNodes.includes(node));
 
@@ -205,7 +205,7 @@ export default {
         };
       });
 
-      const edges = [...this.flowchartElement.querySelectorAll('g[id^=e-]')];
+      const edges = [...this.flowchartElement.querySelectorAll('[id^=e-]')];
       const primaryEdges = edges.filter(edge => !isNaN(edge.id.slice(-1)));
       const alternateEdges = edges.filter(edge => !primaryEdges.includes(edge));
 
@@ -377,7 +377,7 @@ export default {
         });
       });
 
-      this.flowchartElement.querySelectorAll('g').forEach(element => {
+      this.flowchartElement.querySelectorAll('[id^=n-], [id^=e-]').forEach(element => {
         element.classList.remove(...this.itemStates, 'replaced-out', 'replaced-in');
       });
 
@@ -403,7 +403,7 @@ export default {
 
       // replace primary elements with alternate state variants if those exist
       this.itemStates.forEach(state => {
-        this.flowchartElement.querySelectorAll('g.' + state).forEach(element => {
+        this.flowchartElement.querySelectorAll('[id^=n-].' + state +', [id^=e-].' + state).forEach(element => {
           const replacementElement = this.findReplacementElement(element, state);
 
           if (replacementElement) {
@@ -528,7 +528,7 @@ export default {
     }
 
     // nodes
-    g[id^=n-] {
+    [id^=n-] {
       opacity: 0;
       pointer-events: none;
 
@@ -567,7 +567,7 @@ export default {
     }
 
     // edges
-    g[id^=e-] {
+    [id^=e-] {
       opacity: 0;
       pointer-events: none;
 
