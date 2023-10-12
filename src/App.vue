@@ -9,7 +9,7 @@
     @ended="stopPlayback()"
   >
     <source
-      src="narration.mp3"
+      src="/narration.mp3"
       type="audio/mp3"
       @error="flowchartStore.narrationEnabled = false"
     />
@@ -89,7 +89,7 @@ export default {
 
     // fetch and apply user setup from public JSON file
     async fetchUserSetup() {
-      fetch('setup.json')
+      fetch('/setup.json')
         .then(response => response.json())
         .then(data => {
           this.userSetup = data;

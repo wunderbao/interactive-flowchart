@@ -94,7 +94,7 @@ export const useFlowchartStore = defineStore('flowchart', {
   actions: {
     // fetch timestamps from public TXT (Audacity labels export)
     async fetchTimestamps() {
-      fetch('timestamps.txt')
+      fetch('/timestamps.txt')
         .then(response => {
           if (!response.ok) throw Error(response.status);
           return response;
