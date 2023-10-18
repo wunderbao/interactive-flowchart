@@ -212,7 +212,7 @@ export default {
         const edgeNodes = edgeElement.id.split('-');
         const edgeFrom = 'n-' + edgeNodes[1];
         const edgeTo = 'n-' + edgeNodes[2];
-        // const bidirectionalEdge = edgeNodes.length > 3;
+        const bidirectionalEdge = edgeNodes.length >= 4 && isNaN(edgeNodes[3]);
 
         const alternates = {};
         const alternatesArray = alternateEdges.filter(alternateEdge => alternateEdge.id.startsWith(edgeElement.id));
@@ -233,18 +233,18 @@ export default {
         });
 
         // if edge is bidirectional, additionally add the same edge in reverse to the destination/origin node
-        // if (bidirectionalEdge) {
-        //   this.flowchartStore.flowchartNodes[edgeTo].outgoing.push({
-        //     edge: edgeElement,
-        //     node: this.flowchartStore.flowchartNodes[edgeFrom],
-        //     alternates
-        //   });
-        //   this.flowchartStore.flowchartNodes[edgeFrom].incoming.push({
-        //     edge: edgeElement,
-        //     node: this.flowchartStore.flowchartNodes[edgeTo],
-        //     alternates
-        //   });
-        // }
+        if (bidirectionalEdge) {
+          this.flowchartStore.flowchartNodes[edgeTo].outgoing.push({
+            edge: edgeElement,
+            node: this.flowchartStore.flowchartNodes[edgeFrom],
+            alternates
+          });
+          this.flowchartStore.flowchartNodes[edgeFrom].incoming.push({
+            edge: edgeElement,
+            node: this.flowchartStore.flowchartNodes[edgeTo],
+            alternates
+          });
+        }
       });
 
       this.addNodeInteractivity();
