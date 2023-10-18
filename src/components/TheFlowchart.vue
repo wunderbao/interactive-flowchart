@@ -39,9 +39,6 @@ export default {
       flowchartContainer: undefined,
       flowchartElement: undefined,
 
-      // ...
-      itemStates: ['teased', 'revealed', 'next', 'current'],
-
       // flowchart dimensions
       flowchartWidth: 0,
       flowchartHeight: 0,
@@ -189,6 +186,7 @@ export default {
 
       primaryNodes.forEach(nodeElement => {
         const nodeId = nodeElement.id;
+        console.log('processing node: ' + nodeId);
 
         const alternates = {};
         const alternatesArray = alternateNodes.filter(alternateNode => alternateNode.id.startsWith(nodeId));
@@ -210,6 +208,7 @@ export default {
       const alternateEdges = edges.filter(edge => !primaryEdges.includes(edge));
 
       primaryEdges.forEach(edgeElement => {
+        console.log('processing edge: ' + edgeElement.id);
         const edgeNodes = edgeElement.id.split('-');
         const edgeFrom = 'n-' + edgeNodes[1];
         const edgeTo = 'n-' + edgeNodes[2];
@@ -398,7 +397,7 @@ export default {
       this.markItemAsRevealed(this.flowchartStore.currentNode.element);
 
       // replace primary elements with alternate state variants if those exist
-      this.itemStates.forEach(state => {
+      ['teased', 'revealed', 'next', 'current'].forEach(state => {
         this.flowchartElement.querySelectorAll('[data-state=' + state +']').forEach(element => {
           const replacementElement = this.findReplacementElement(element, state);
 
