@@ -98,6 +98,11 @@ export default {
         .catch(error => console.log(error));
     },
     applyUserSetup() {
+      this.flowchartStore.flowchartId = this.userSetup.id;
+
+      // attempt to get state from previous session
+      this.resumeFromLocalStorage();
+
       document.title = this.userSetup.title;
 
       for (const [property, color] of Object.entries(this.userSetup.colors)) {
@@ -261,9 +266,6 @@ export default {
 
     // fetch timestamps from public JSON
     this.fetchTimestamps();
-
-    // attempt to get state from previous session
-    this.resumeFromLocalStorage();
   },
 
   mounted() {

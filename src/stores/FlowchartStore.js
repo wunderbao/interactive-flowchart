@@ -2,6 +2,9 @@ import { defineStore } from 'pinia';
 
 export const useFlowchartStore = defineStore('flowchart', {
   state: () => ({
+    // ID unique to the flowchart, used as key in localStorage
+    flowchartId: 'flowchart-template',
+
     // nodes and their state
     flowchartNodes: {},
     currentNodeId: 'n-001',
@@ -34,6 +37,10 @@ export const useFlowchartStore = defineStore('flowchart', {
     resetActionAvailable: false
   }),
   getters: {
+    // prepend 'flowchart_' to ID from user setup
+    computedFlowchartId(state) {
+      return 'flowchart_' + state.flowchartId;
+    },
     // playback progress as percentage (with minimum value for initial progress bar visibility)
     playbackProgress(state) {
       if (state.playbackDuration !== 0 && state.playbackPosition !== 0) {
@@ -120,24 +127,30 @@ export const useFlowchartStore = defineStore('flowchart', {
     },
     // save all parameters relevant for restoring the state of the chart to local storage
     saveToLocalStorage() {
+      const currentState = {};
+
       this.storedProperties.forEach((property) => {
-        localStorage.setItem(property, JSON.stringify(this[property]));
+        currentState[property] = this[property];
       });
+
+      localStorage.setItem(this.computedFlowchartId, JSON.stringify(currentState));
     },
     // attempt to get state from previous session
     resumeFromLocalStorage() {
-      if (localStorage.getItem(this.storedProperties[0])) {
+      if (localStorage.getItem(this.computedFlowchartId)) {
         this.resumedFromLocalStorage = true;
         this.resetActionAvailable = true;
 
+        const restoredState = JSON.parse(localStorage.getItem(this.computedFlowchartId));
+
         this.storedProperties.forEach((property) => {
-          this[property] = JSON.parse(localStorage.getItem(property));
+          this[property] = restoredState[property];
         });
       }
     },
     // clear local storage and reload the page
     clearLocalStorageAndReload() {
-      localStorage.clear();
+      localStorage.removeItem(this.computedFlowchartId);
       location.reload();
     }
   }
