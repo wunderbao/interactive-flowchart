@@ -181,6 +181,7 @@ button.open {
     font-size: 30px;
     font-weight: 600;
     line-height: 110%;
+    text-wrap: balance;
   }
 
   h2 {
@@ -188,6 +189,7 @@ button.open {
     font-size: 20px;
     font-weight: 400;
     line-height: 120%;
+    text-wrap: balance;
   }
 
   .description {
