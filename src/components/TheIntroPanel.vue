@@ -72,7 +72,7 @@ export default {
       'clearLocalStorageAndReload'
     ]),
     async fetchDescription() {
-      fetch('/intro.md')
+      fetch('intro.md')
         .then(response => response.text())
         .then(data => {
           const html = marked(data.replaceAll('# ', '### '));

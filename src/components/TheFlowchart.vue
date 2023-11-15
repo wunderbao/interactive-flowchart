@@ -1,7 +1,7 @@
 <template>
   <div ref="container" class="flowchart">
     <InlineSvg
-      src="/flowchart.svg"
+      src="flowchart.svg"
       :class="{ ready: flowchartElement }"
       @loaded="flowchartReady($event)"
     />
