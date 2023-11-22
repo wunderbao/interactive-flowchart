@@ -1,34 +1,38 @@
 # Interactive Flowchart
 
-**_Navigating and narrating complexity through storytelling and exploration_**
+**_Navigating and narrating complexity through exploration and storytelling_**
 
 This interface concept of an interactive flowchart proposes the combination of linear audio narration with non-linear open-ended exploration, offering a novel way to understand and navigate complex issues. The interactive flowchart is designed to be inviting and engaging, allowing viewers, readers, and learners to follow a guided tour through a flowchart and pursue their own paths through its contents.
+
+<img src="https://raw.githubusercontent.com/uclab-potsdam/interactive-flowchart/main/docs/template-preview.png" alt="Preview of the flowchart template" width="540" />
 
 ##  Project In Use
 
 ### Book: “I Want a Better Catastrophe”
 
-The project is originally inspired by Andrew Boyd's attempt to come to grips with the climate crisis through a printed flowchart included in his recently published book [“I Want a Better Catastrophe”](https://bettercatastrophe.com/). In addition to an expansive canvas of 330 interconnected nodes, the interactive version contains a nearly one-hour-long audio narration, in which Andrew offers one pathway through the chart and elaborates on many of its topics and elements.
+The project is originally inspired by Andrew Boyd’s attempt to come to grips with the climate crisis through a printed flowchart included in his recently published book [“I Want a Better Catastrophe”](https://bettercatastrophe.com/). In addition to an expansive canvas of 330 interconnected nodes, the interactive version contains a nearly one-hour-long audio narration, in which Andrew offers one pathway through the chart and elaborates on many of its topics and elements.
 
-The Better Catastrophe flowchart [can be explored here](https://flowchart.bettercatastrophe.com/).
-
-[<img src="https://raw.githubusercontent.com/uclab-potsdam/interactive-flowchart/main/docs/better-catastrophe.png" alt="Preview of Better Catastrophe flowchart" width="320" />](https://flowchart.bettercatastrophe.com/)
+[<img src="https://raw.githubusercontent.com/uclab-potsdam/interactive-flowchart/main/docs/better-catastrophe.png" alt="Preview of Better Catastrophe flowchart" width="360" />](https://flowchart.bettercatastrophe.com/)
+<br />
+[→ https://flowchart.bettercatastrophe.com/](https://flowchart.bettercatastrophe.com/)
 
 ### Course: “What next? Mapping and narrating personal dilemmas through interactive flowcharts”
 
 After restructuring the interactive version of the “I Want a Better Catastrophe” flowchart as the customizable template provided here, a one-week project course at the [Design Department](https://www.fh-potsdam.de/design) of University of Applied Sciences Potsdam was conducted. Participants were tasked with creating and illustrating a flowchart about a dilemma of their choice, narrating a path through the chart using an audio recording, and making their creations interactive using the template.
 
-The course resulted in [14 interactive flowchart projects](https://uclab.fh-potsdam.de/interactive-flowchart/projects/).
-
-[<img src="https://raw.githubusercontent.com/uclab-potsdam/interactive-flowchart/main/docs/course-projects.png" alt="Preview of course results" width="320" />](https://uclab.fh-potsdam.de/interactive-flowchart/projects/)
+[<img src="https://raw.githubusercontent.com/uclab-potsdam/interactive-flowchart/main/docs/course-projects.png" alt="Preview of course results" width="360" />](https://uclab.fh-potsdam.de/interactive-flowchart/projects/)
+<br />
+[→ https://uclab.fh-potsdam.de/interactive-flowchart/projects/](https://uclab.fh-potsdam.de/interactive-flowchart/projects/)
 
 ## Template Setup
 
 The template’s customizable contents are split across five files, all of which are stored in the `public` directory. Therefore, the template can be adapted by exchanging these files, without the need for a build step. (Nonetheless, the project’s source can be set up using `npm install`, tested using `npm run dev` and built using `npm run build`.)
 
-In addition to the details below, the process of customizing the template is also available as a [tutorial, set up as a read-only Figma document](https://figma.com/file/oEk2RN9Ebt9KQkU8KIrR3a/).
+In addition to the details below, the process of customizing the template is also available as a tutorial, set up as a read-only Figma document.
 
-[<img src="https://raw.githubusercontent.com/uclab-potsdam/interactive-flowchart/main/docs/tutorial-figma.png" alt="Preview of flowchart tutorial available on Figma" width="320" />](https://figma.com/file/oEk2RN9Ebt9KQkU8KIrR3a/)
+[<img src="https://raw.githubusercontent.com/uclab-potsdam/interactive-flowchart/main/docs/tutorial-figma.png" alt="Preview of flowchart tutorial available on Figma" width="360" />](https://figma.com/file/oEk2RN9Ebt9KQkU8KIrR3a/)
+<br />
+[→ https://figma.com/file/oEk2RN9Ebt9KQkU8KIrR3a/](https://figma.com/file/oEk2RN9Ebt9KQkU8KIrR3a/)
 
 ### flowchart.svg
 
@@ -73,8 +77,8 @@ The interactive flowchart bridges this separation by integrating audio narration
 
 ## Credits
 
-Interactive Flowchart is developed within [Urban Complexity Lab](https://uclab.fh-potsdam.de/) at University of Applied Sciences Potsdam and has involved:
+Interactive Flowchart is developed within [UCLAB](https://uclab.fh-potsdam.de/) at University of Applied Sciences Potsdam and has involved:
 
-- [Andrew Boyd](https://bettercatastrophe.com/): “I Want a Better Catastrophe” (book and original flowchart)
 - [Jona Pomerance](https://jona.im/): Ideation, design and development
 - [Marian Dörk](https://mariandoerk.de/): Research supervision
+- [Andrew Boyd](https://bettercatastrophe.com/): “I Want a Better Catastrophe” (book and original flowchart)
