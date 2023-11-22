@@ -6,4 +6,4 @@ Use the button below to start (and pause) the audio narration of the chart. You 
 
 # Credits
 
-This flowchart project was created as part of the class “What next? Mapping and narrating personal dilemmas through interactive flowcharts” taught at [Fachhochschule Potsdam](https://fh-potsdam.de/).
+This flowchart project was created using the [Interactive Flowchart template](https://github.com/uclab-potsdam/interactive-flowchart).
