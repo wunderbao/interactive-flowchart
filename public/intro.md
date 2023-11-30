@@ -6,4 +6,4 @@ Use the button below to start (and pause) the audio narration of the chart. You 
 
 # Credits
 
-This flowchart project was created using the [Interactive Flowchart template](https://github.com/uclab-potsdam/interactive-flowchart).
+This demo project was created at [Urban Complexity Lab](https://uclab.fh-potsdam.de/) as a placeholder example for the customizable flowchart template linked to below.
