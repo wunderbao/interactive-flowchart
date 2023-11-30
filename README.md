@@ -26,7 +26,7 @@ After restructuring the interactive version of the “I Want a Better Catastroph
 
 ## Template Setup
 
-The template’s customizable contents are split across five files, all of which are stored in the `public` directory. Therefore, the template can be adapted by exchanging these files, without the need for a build step. (Nonetheless, the project’s source can be set up using `npm install`, tested using `npm run dev` and built using `npm run build`.)
+The template’s customizable contents are split across five files, all of which are stored in the `public` directory. Therefore, the template can be adapted by [downloading a pre-built release](https://github.com/uclab-potsdam/interactive-flowchart/releases) and exchanging these files, without the need for a build step. (Nonetheless, the project’s source can be set up using `npm install`, tested using `npm run dev` and built using `npm run build`.)
 
 In addition to the details below, the process of customizing the template is also available as a tutorial, set up as a read-only Figma document.
 
