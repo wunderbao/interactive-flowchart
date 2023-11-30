@@ -16,7 +16,7 @@
           <button @click="clearLocalStorageAndReload()">Reset progress and start over</button>
         </div>
         <div class="description" v-html="description" />
-        <p class="attribution">Powered by <a href="https://github.com/uclab-potsdam/interactive-flowchart" target="_blank">Interactive Flowchart</a></p>
+        <p class="attribution">Powered by <a href="https://uclab.fh-potsdam.de/interactive-flowchart/" target="_blank">Interactive Flowchart</a></p>
       </div>
     </div>
     <button class="close" title="Close introduction" @click="$emit('toggleIntroPanel')"></button>
