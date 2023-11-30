@@ -4,7 +4,9 @@
 
 This interface concept of an interactive flowchart proposes the combination of linear audio narration with non-linear open-ended exploration, offering a novel way to understand and navigate complex issues. The interactive flowchart is designed to be inviting and engaging, allowing viewers, readers, and learners to follow a guided tour through a flowchart and pursue their own paths through its contents.
 
-<img src="https://raw.githubusercontent.com/uclab-potsdam/interactive-flowchart/main/docs/template-preview.png" alt="Preview of the flowchart template" width="540" />
+[<img src="https://raw.githubusercontent.com/uclab-potsdam/interactive-flowchart/main/docs/template-preview.png" alt="Preview of the flowchart template" width="540" />](https://uclab.fh-potsdam.de/interactive-flowchart/demo/)
+<br />
+[→ https://uclab.fh-potsdam.de/interactive-flowchart/demo/](https://uclab.fh-potsdam.de/interactive-flowchart/demo/)
 
 ##  Project In Use
 
