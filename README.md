@@ -30,7 +30,7 @@ After restructuring the interactive version of the “I Want a Better Catastroph
 
 The template’s customizable contents are split across five files, all of which are stored in the `public` directory. Therefore, the template can be adapted by [downloading a pre-built release](https://github.com/uclab-potsdam/interactive-flowchart/releases) and exchanging these files, without the need for a build step. (Nonetheless, the project’s source can be set up using `npm install`, tested using `npm run dev` and built using `npm run build`.)
 
-In order to run, the template’s files need to be served/accessed through a web server. For local testing purposes, a local server environment like macOS’s built-in Apache server or a package like [live-server](https://github.com/tapio/live-server) can be used.
+In order to run, the template’s files need to be served/accessed through a web server. For local testing purposes, a local server environment like macOS’s built-in Apache server or the [Live Server Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) can be used.
 
 In addition to the details outlined below, the process of customizing the template is also available as a visual tutorial:
 
