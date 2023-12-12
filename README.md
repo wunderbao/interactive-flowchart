@@ -30,7 +30,9 @@ After restructuring the interactive version of the “I Want a Better Catastroph
 
 The template’s customizable contents are split across five files, all of which are stored in the `public` directory. Therefore, the template can be adapted by [downloading a pre-built release](https://github.com/uclab-potsdam/interactive-flowchart/releases) and exchanging these files, without the need for a build step. (Nonetheless, the project’s source can be set up using `npm install`, tested using `npm run dev` and built using `npm run build`.)
 
-In addition to the details below, the process of customizing the template is also available as a tutorial, set up as a read-only Figma document.
+In order to run, the template’s files need to be served/accessed through a web server. For local testing purposes, a local server environment like macOS’s built-in Apache server or a package like [live-server](https://github.com/tapio/live-server) can be used.
+
+In addition to the details outlined below, the process of customizing the template is also available as a visual tutorial:
 
 [<img src="https://raw.githubusercontent.com/uclab-potsdam/interactive-flowchart/main/docs/tutorial-figma.png" alt="Preview of flowchart tutorial available on Figma" width="360" />](https://figma.com/file/oEk2RN9Ebt9KQkU8KIrR3a/)
 <br />
